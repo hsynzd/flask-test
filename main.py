@@ -15,9 +15,9 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 # get pkl datas
-model_path = os.path.join(os.getcwd(), 'models', 'xgb_model.pkl')
-scaler_path = os.path.join(os.getcwd(), 'models', 'scaler.pkl')
-label_encoder_path = os.path.join(os.getcwd(), 'models', 'label_encoders.pkl')
+model_path = os.path.join(os.getcwd(), 'models', 'xgb_model (3).pkl')
+scaler_path = os.path.join(os.getcwd(), 'models', 'scaler (5).pkl')
+label_encoder_path = os.path.join(os.getcwd(), 'models', 'label_encoders (2).pkl')
 
 # Model ve diğer dosyaları yükleyin
 model = joblib.load(model_path)
