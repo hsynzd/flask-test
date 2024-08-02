@@ -15,38 +15,14 @@ logging.basicConfig(level=logging.DEBUG)
 # Load model and other files
 model_path = os.path.join(os.getcwd(), 'models', 'xgb_model (3).pkl')
 scaler_path = os.path.join(os.getcwd(), 'models', 'scaler (5).pkl')
-label_encoder_path = os.path.join(os.getcwd(), 'models', 'label_encoders (2).pkl')
 
 model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
-with open(label_encoder_path, 'rb') as f:
-    label_encoders = pickle.load(f)
 
 categories = ['misc_net', 'grocery_pos', 'entertainment', 'gas_transport', 'misc_pos', 'grocery_net', 'shopping_net', 'shopping_pos', 'food_dining', 'personal_care', 'health_fitness', 'travel', 'kids_pets', 'home']
 genders = ['gender_F', 'gender_M']
 states = ['state_AK', 'state_AL', 'state_AR', 'state_AZ', 'state_CA', 'state_CO', 'state_CT', 'state_DC', 'state_DE', 'state_FL', 'state_GA', 'state_HI', 'state_IA', 'state_ID', 'state_IL', 'state_IN', 'state_KS', 'state_KY', 'state_LA', 'state_MA', 'state_MD', 'state_ME', 'state_MI', 'state_MN', 'state_MO', 'state_MS', 'state_MT', 'state_NC', 'state_ND', 'state_NE', 'state_NH', 'state_NJ', 'state_NM', 'state_NV', 'state_NY', 'state_OH', 'state_OK', 'state_OR', 'state_PA', 'state_RI', 'state_SC', 'state_SD', 'state_TN', 'state_TX', 'state_UT', 'state_VA', 'state_VT', 'state_WA', 'state_WI', 'state_WV', 'state_WY']
 day_of_week_mapping = {'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6, 'Sunday': 7}
-
-def fit_label_encoder(y):
-    """
-    Fit the label encoder and return a dictionary of classes and an unknown label index.
-    """
-    classes = np.array(sorted(set(y)))
-    classes = np.append(classes, ['UNK'])  # Add a class for unknown labels
-    return classes
-
-def transform_labels(y, classes):
-    """
-    Transform labels to indices, using 'UNK' for unknown labels.
-    """
-    unknown_label = list(classes).index('UNK')
-    return np.array([list(classes).index(x) if x in classes else unknown_label for x in y])
-
-def inverse_transform_labels(y, classes):
-    """
-    Inverse transform indices to labels, using 'UNK' for indices out of range.
-    """
-    return np.array([classes[i] if i < len(classes) else 'UNK' for i in y])
 
 def preprocess_data(data):
     try:
@@ -86,11 +62,6 @@ def preprocess_data(data):
                 encoded_columns[col] = 0
         
         df = pd.concat([df.drop(columns=['category', 'gender', 'state']), encoded_columns], axis=1)
-        
-        df['merchant'] = transform_labels(df['merchant'], label_encoders['merchant_encoder'])
-        df['first'] = transform_labels(df['first'], label_encoders['first_encoder'])
-        df['last'] = transform_labels(df['last'], label_encoders['last_encoder'])
-        df['job'] = transform_labels(df['job'], label_encoders['job_encoder'])
         
         expected_columns = scaler.feature_names_in_
         df = df.reindex(columns=expected_columns, fill_value=0)
